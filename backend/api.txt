@@ -1,0 +1,1329 @@
+# EmotiCare API Documentation
+# Base URL: http://localhost:8000
+# All API endpoints are prefixed with /api/v1/
+
+## Root Endpoints
+
+### GET / (Welcome)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "message": "Welcome to EmotiCare",
+  "description": "Digital Mental Health and Psychological Support System for Students",
+  "version": "1.0.0",
+  "docs": "/docs"
+}
+```
+
+### GET /health (Health Check)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/health" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "status": "healthy",
+  "app_name": "EmotiCare",
+  "version": "1.0.0"
+}
+```
+
+## Authentication API (/api/v1/auth)
+
+### POST /api/v1/auth/register (Register User)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "student@example.com",
+    "password": "SecurePass123!",
+    "full_name": "John Doe",
+    "role": "student",
+    "student_id": "STU001",
+    "department": "Computer Science",
+    "year_of_study": 2,
+    "gender": "male",
+    "age": 20,
+    "phone_number": "+1234567890",
+    "emergency_contact": "+0987654321"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439011",
+  "email": "student@example.com",
+  "full_name": "John Doe",
+  "role": "student",
+  "is_active": true,
+  "student_id": "STU001",
+  "department": "Computer Science",
+  "year_of_study": 2,
+  "gender": "male",
+  "age": 20,
+  "phone_number": "+1234567890",
+  "emergency_contact": "+0987654321",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z",
+  "last_login": null
+}
+```
+
+### POST /api/v1/auth/login (Login)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/login" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=student@example.com&password=SecurePass123!"
+```
+
+**Example Return:**
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "token_type": "bearer",
+  "expires_in": 1800,
+  "user": {
+    "id": "507f1f77bcf86cd799439011",
+    "email": "student@example.com",
+    "full_name": "John Doe",
+    "role": "student",
+    "is_active": true,
+    "student_id": "STU001",
+    "department": "Computer Science",
+    "year_of_study": 2,
+    "gender": "male",
+    "age": 20,
+    "phone_number": "+1234567890",
+    "emergency_contact": "+0987654321",
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z",
+    "last_login": "2024-01-15T10:35:00Z"
+  }
+}
+```
+
+### GET /api/v1/auth/me (Get Current User)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/auth/me" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439011",
+  "email": "student@example.com",
+  "full_name": "John Doe",
+  "role": "student",
+  "is_active": true,
+  "student_id": "STU001",
+  "department": "Computer Science",
+  "year_of_study": 2,
+  "gender": "male",
+  "age": 20,
+  "phone_number": "+1234567890",
+  "emergency_contact": "+0987654321",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z",
+  "last_login": "2024-01-15T10:35:00Z"
+}
+```
+
+### PUT /api/v1/auth/me (Update Current User)
+**Curl Command:**
+```bash
+curl -X PUT "http://localhost:8000/api/v1/auth/me" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "full_name": "John Smith",
+    "phone_number": "+1234567891"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439011",
+  "email": "student@example.com",
+  "full_name": "John Smith",
+  "role": "student",
+  "is_active": true,
+  "student_id": "STU001",
+  "department": "Computer Science",
+  "year_of_study": 2,
+  "gender": "male",
+  "age": 20,
+  "phone_number": "+1234567891",
+  "emergency_contact": "+0987654321",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:30:00Z",
+  "last_login": "2024-01-15T10:35:00Z"
+}
+```
+
+### POST /api/v1/auth/change-password (Change Password)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/change-password" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "current_password": "SecurePass123!",
+    "new_password": "NewSecurePass456!"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "message": "Password changed successfully"
+}
+```
+
+### POST /api/v1/auth/logout (Logout)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/auth/logout" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "message": "Successfully logged out"
+}
+```
+
+### GET /api/v1/auth/users (Get All Users - Admin Only)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/auth/users?skip=0&limit=100" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439011",
+    "email": "student@example.com",
+    "full_name": "John Doe",
+    "role": "student",
+    "is_active": true,
+    "student_id": "STU001",
+    "department": "Computer Science",
+    "year_of_study": 2,
+    "gender": "male",
+    "age": 20,
+    "phone_number": "+1234567890",
+    "emergency_contact": "+0987654321",
+    "created_at": "2024-01-15T10:30:00Z",
+    "updated_at": "2024-01-15T10:30:00Z",
+    "last_login": "2024-01-15T10:35:00Z"
+  }
+]
+```
+
+## Chat API (/api/v1/chat)
+
+### POST /api/v1/chat/start-session (Start Chat Session)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/chat/start-session" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "initial_message": "I'm feeling stressed about my exams",
+    "emotional_state": "anxious"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439012",
+  "user_id": "507f1f77bcf86cd799439011",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I'm feeling stressed about my exams",
+      "timestamp": "2024-01-15T10:40:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "I understand that exam stress can be overwhelming. It's completely normal to feel anxious about important assessments. Can you tell me more about what's specifically worrying you?",
+      "timestamp": "2024-01-15T10:40:01Z",
+      "emotional_analysis": {
+        "requires_intervention": false,
+        "emotional_support_level": "moderate",
+        "suggested_resources": ["stress_management", "study_techniques"]
+      }
+    }
+  ],
+  "status": "active",
+  "emotional_state": "anxious",
+  "crisis_indicators": [],
+  "intervention_triggered": false,
+  "counselor_notified": false,
+  "session_summary": null,
+  "created_at": "2024-01-15T10:40:00Z",
+  "updated_at": "2024-01-15T10:40:01Z",
+  "ended_at": null
+}
+```
+
+### POST /api/v1/chat/sessions/{session_id}/message (Send Message)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/chat/sessions/507f1f77bcf86cd799439012/message" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message_content": "I have so much material to cover and not enough time"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "message": "I hear that you're feeling overwhelmed by the amount of material you need to cover. Time management during exam periods can be really challenging. Have you tried breaking down your study material into smaller, manageable chunks? This technique, called 'chunking', can make studying feel less daunting.",
+  "requires_intervention": false,
+  "emotional_support_level": "moderate",
+  "suggested_resources": ["time_management", "study_techniques", "stress_management"]
+}
+```
+
+### GET /api/v1/chat/sessions (Get User Sessions)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/chat/sessions?limit=10&skip=0" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439012",
+    "chat_title": "Exam Stress Support",
+    "status": "active",
+    "message_count": 4,
+    "emotional_state": "anxious",
+    "intervention_triggered": false,
+    "created_at": "2024-01-15T10:40:00Z",
+    "updated_at": "2024-01-15T10:45:00Z",
+    "ended_at": null
+  }
+]
+```
+
+### GET /api/v1/chat/sessions/{session_id} (Get Specific Session)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/chat/sessions/507f1f77bcf86cd799439012" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439012",
+  "user_id": "507f1f77bcf86cd799439011",
+  "messages": [
+    {
+      "role": "user",
+      "content": "I'm feeling stressed about my exams",
+      "timestamp": "2024-01-15T10:40:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "I understand that exam stress can be overwhelming...",
+      "timestamp": "2024-01-15T10:40:01Z",
+      "emotional_analysis": {
+        "requires_intervention": false,
+        "emotional_support_level": "moderate",
+        "suggested_resources": ["stress_management"]
+      }
+    }
+  ],
+  "status": "active",
+  "emotional_state": "anxious",
+  "crisis_indicators": [],
+  "intervention_triggered": false,
+  "counselor_notified": false,
+  "session_summary": null,
+  "created_at": "2024-01-15T10:40:00Z",
+  "updated_at": "2024-01-15T10:40:01Z",
+  "ended_at": null
+}
+```
+
+### POST /api/v1/chat/sessions/{session_id}/end (End Session)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/chat/sessions/507f1f77bcf86cd799439012/end" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "message": "Chat session ended successfully"
+}
+```
+
+### GET /api/v1/chat/emergency-resources (Get Emergency Resources)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/chat/emergency-resources" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "crisis_hotlines": [
+    {
+      "name": "National Suicide Prevention Helpline",
+      "number": "91-9152987821",
+      "available": "24/7",
+      "languages": ["Hindi", "English"]
+    }
+  ],
+  "online_resources": [
+    {
+      "name": "NIMHANS Centre for Well Being",
+      "url": "https://nimhans.ac.in/centre-for-well-being",
+      "description": "Mental health resources and support"
+    }
+  ],
+  "immediate_coping": [
+    "Take deep breaths: 4 counts in, hold for 4, exhale for 6",
+    "Ground yourself: Name 5 things you see, 4 you hear, 3 you feel",
+    "Call a trusted friend or family member"
+  ]
+}
+```
+
+## Assessments API (/api/v1/assessments)
+
+### POST /api/v1/assessments (Create Assessment)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/assessments" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "assessment_type": "PHQ9",
+    "responses": {
+      "little_interest": 1,
+      "feeling_down": 2,
+      "trouble_sleeping": 1,
+      "feeling_tired": 2,
+      "poor_appetite": 0,
+      "feeling_bad": 1,
+      "trouble_concentrating": 1,
+      "moving_slowly": 0,
+      "thoughts_death": 0
+    },
+    "notes": "Feeling mildly stressed about upcoming exams"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439013",
+  "user_id": "507f1f77bcf86cd799439011",
+  "assessment_type": "PHQ9",
+  "responses": {
+    "little_interest": 1,
+    "feeling_down": 2,
+    "trouble_sleeping": 1,
+    "feeling_tired": 2,
+    "poor_appetite": 0,
+    "feeling_bad": 1,
+    "trouble_concentrating": 1,
+    "moving_slowly": 0,
+    "thoughts_death": 0
+  },
+  "result": {
+    "score": 8,
+    "severity_level": "mild",
+    "risk_level": "low",
+    "requires_immediate_attention": false,
+    "recommendations": [
+      "Consider stress management techniques",
+      "Maintain regular sleep schedule",
+      "Exercise regularly"
+    ],
+    "interpretation": "Mild depressive symptoms detected. Monitor symptoms and consider professional support if they persist."
+  },
+  "notes": "Feeling mildly stressed about upcoming exams",
+  "created_at": "2024-01-15T11:00:00Z",
+  "administered_by": null
+}
+```
+
+### GET /api/v1/assessments (Get User Assessments)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/assessments?limit=10&skip=0" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439013",
+    "user_id": "507f1f77bcf86cd799439011",
+    "assessment_type": "PHQ9",
+    "responses": {
+      "little_interest": 1,
+      "feeling_down": 2,
+      "trouble_sleeping": 1,
+      "feeling_tired": 2,
+      "poor_appetite": 0,
+      "feeling_bad": 1,
+      "trouble_concentrating": 1,
+      "moving_slowly": 0,
+      "thoughts_death": 0
+    },
+    "result": {
+      "score": 8,
+      "severity_level": "mild",
+      "risk_level": "low",
+      "requires_immediate_attention": false,
+      "recommendations": ["Consider stress management techniques"],
+      "interpretation": "Mild depressive symptoms detected..."
+    },
+    "notes": "Feeling mildly stressed about upcoming exams",
+    "created_at": "2024-01-15T11:00:00Z",
+    "administered_by": null
+  }
+]
+```
+
+### GET /api/v1/assessments/{assessment_id} (Get Specific Assessment)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/assessments/507f1f77bcf86cd799439013" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439013",
+  "user_id": "507f1f77bcf86cd799439011",
+  "assessment_type": "PHQ9",
+  "responses": {
+    "little_interest": 1,
+    "feeling_down": 2,
+    "trouble_sleeping": 1,
+    "feeling_tired": 2,
+    "poor_appetite": 0,
+    "feeling_bad": 1,
+    "trouble_concentrating": 1,
+    "moving_slowly": 0,
+    "thoughts_death": 0
+  },
+  "result": {
+    "score": 8,
+    "severity_level": "mild",
+    "risk_level": "low",
+    "requires_immediate_attention": false,
+    "recommendations": ["Consider stress management techniques"],
+    "interpretation": "Mild depressive symptoms detected..."
+  },
+  "notes": "Feeling mildly stressed about upcoming exams",
+  "created_at": "2024-01-15T11:00:00Z",
+  "administered_by": null
+}
+```
+
+### GET /api/v1/assessments/summary/dashboard (Get Assessment Summary)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/assessments/summary/dashboard" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "assessment_type": "PHQ9",
+    "latest_score": 8,
+    "severity_level": "mild",
+    "assessment_date": "2024-01-15T11:00:00Z",
+    "trend": "stable"
+  }
+]
+```
+
+### GET /api/v1/assessments/types/available (Get Available Assessment Types)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/assessments/types/available" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "type": "PHQ9",
+    "name": "PHQ-9 Depression Screening",
+    "description": "Patient Health Questionnaire for depression screening",
+    "duration_minutes": 5,
+    "questions": 9
+  },
+  {
+    "type": "GAD7",
+    "name": "GAD-7 Anxiety Screening",
+    "description": "Generalized Anxiety Disorder screening tool",
+    "duration_minutes": 3,
+    "questions": 7
+  }
+]
+```
+
+### GET /api/v1/assessments/questions/{assessment_type} (Get Assessment Questions)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/assessments/questions/PHQ9" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "title": "PHQ-9 Depression Screening",
+  "instructions": "Over the last 2 weeks, how often have you been bothered by any of the following problems?",
+  "scale": {
+    "0": "Not at all",
+    "1": "Several days",
+    "2": "More than half the days",
+    "3": "Nearly every day"
+  },
+  "questions": [
+    {
+      "key": "little_interest",
+      "text": "Little interest or pleasure in doing things"
+    }
+  ]
+}
+```
+
+### GET /api/v1/assessments/admin/high-risk (Get High-Risk Assessments - Admin)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/assessments/admin/high-risk?days=7" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "assessment_id": "507f1f77bcf86cd799439013",
+    "user_info": {
+      "id": "507f1f77bcf86cd799439011",
+      "department": "Computer Science",
+      "year_of_study": 2,
+      "age_group": "18-20"
+    },
+    "assessment_type": "PHQ9",
+    "score": 15,
+    "severity_level": "moderate",
+    "risk_level": "high",
+    "requires_immediate_attention": false,
+    "created_at": "2024-01-15T11:00:00Z",
+    "recommendations": ["Schedule counseling session"]
+  }
+]
+```
+
+## Appointments API (/api/v1/appointments)
+
+### POST /api/v1/appointments/book (Book Appointment)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/appointments/book" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "counselor_id": "507f1f77bcf86cd799439014",
+    "appointment_date": "2024-01-20",
+    "start_time": "14:00",
+    "end_time": "15:00",
+    "appointment_type": "individual",
+    "mode": "in-person",
+    "reason": "Academic stress and anxiety",
+    "urgency_level": "medium",
+    "notes": "Having trouble concentrating on studies"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "appointment_id": "507f1f77bcf86cd799439015",
+  "status": "scheduled",
+  "counselor_name": "Dr. Sarah Johnson",
+  "appointment_date": "2024-01-20",
+  "start_time": "14:00",
+  "end_time": "15:00",
+  "message": "Appointment booked successfully. You will receive a confirmation soon."
+}
+```
+
+### GET /api/v1/appointments/available-slots (Get Available Slots)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/appointments/available-slots?date=2024-01-20" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "counselor_id": "507f1f77bcf86cd799439014",
+    "counselor_name": "Dr. Sarah Johnson",
+    "date": "2024-01-20",
+    "start_time": "10:00",
+    "end_time": "11:00",
+    "appointment_type": "individual",
+    "available": true
+  }
+]
+```
+
+### GET /api/v1/appointments/my-appointments (Get User Appointments)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/appointments/my-appointments" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439015",
+    "student_id": "507f1f77bcf86cd799439011",
+    "counselor_id": "507f1f77bcf86cd799439014",
+    "counselor_name": "Dr. Sarah Johnson",
+    "appointment_date": "2024-01-20",
+    "start_time": "14:00",
+    "end_time": "15:00",
+    "appointment_type": "individual",
+    "mode": "in-person",
+    "reason": "Academic stress and anxiety",
+    "urgency_level": "medium",
+    "status": "scheduled",
+    "notes": "Having trouble concentrating on studies",
+    "counselor_notes": null,
+    "created_at": "2024-01-15T12:00:00Z",
+    "updated_at": "2024-01-15T12:00:00Z"
+  }
+]
+```
+
+### PUT /api/v1/appointments/{appointment_id} (Update Appointment)
+**Curl Command:**
+```bash
+curl -X PUT "http://localhost:8000/api/v1/appointments/507f1f77bcf86cd799439015" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reason": "Updated: Academic stress and concentration issues",
+    "notes": "Also experiencing sleep difficulties"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "id": "507f1f77bcf86cd799439015",
+  "student_id": "507f1f77bcf86cd799439011",
+  "counselor_id": "507f1f77bcf86cd799439014",
+  "counselor_name": "Dr. Sarah Johnson",
+  "appointment_date": "2024-01-20",
+  "start_time": "14:00",
+  "end_time": "15:00",
+  "appointment_type": "individual",
+  "mode": "in-person",
+  "reason": "Updated: Academic stress and concentration issues",
+  "urgency_level": "medium",
+  "status": "scheduled",
+  "notes": "Also experiencing sleep difficulties",
+  "counselor_notes": null,
+  "created_at": "2024-01-15T12:00:00Z",
+  "updated_at": "2024-01-15T12:05:00Z"
+}
+```
+
+### DELETE /api/v1/appointments/{appointment_id} (Cancel Appointment)
+**Curl Command:**
+```bash
+curl -X DELETE "http://localhost:8000/api/v1/appointments/507f1f77bcf86cd799439015" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "message": "Appointment cancelled successfully"
+}
+```
+
+### GET /api/v1/appointments/counselors (Get Available Counselors)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/appointments/counselors" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439014",
+    "name": "Dr. Sarah Johnson",
+    "specializations": ["Anxiety", "Depression", "Academic Stress"],
+    "bio": "Licensed clinical psychologist with 10 years experience...",
+    "experience": "10 years",
+    "languages": ["English", "Hindi"],
+    "rating": 4.8,
+    "availability": {
+      "monday": {"start": "09:00", "end": "17:00", "available": true}
+    }
+  }
+]
+```
+
+### GET /api/v1/appointments/counselor/appointments (Get Counselor Appointments)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/appointments/counselor/appointments" \
+  -H "Authorization: Bearer COUNSELOR_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439015",
+    "student_id": "507f1f77bcf86cd799439011",
+    "student_name": "John Doe",
+    "counselor_id": "507f1f77bcf86cd799439014",
+    "counselor_name": "Dr. Sarah Johnson",
+    "appointment_date": "2024-01-20",
+    "start_time": "14:00",
+    "end_time": "15:00",
+    "appointment_type": "individual",
+    "mode": "in-person",
+    "reason": "Academic stress and anxiety",
+    "urgency_level": "medium",
+    "status": "scheduled",
+    "notes": "Having trouble concentrating on studies",
+    "counselor_notes": "Student appears motivated to improve",
+    "created_at": "2024-01-15T12:00:00Z",
+    "updated_at": "2024-01-15T12:05:00Z"
+  }
+]
+```
+
+### PUT /api/v1/appointments/counselor/availability (Update Counselor Availability)
+**Curl Command:**
+```bash
+curl -X PUT "http://localhost:8000/api/v1/appointments/counselor/availability" \
+  -H "Authorization: Bearer COUNSELOR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "monday": {"start": "09:00", "end": "17:00", "available": true},
+    "tuesday": {"start": "09:00", "end": "17:00", "available": true},
+    "wednesday": {"start": "10:00", "end": "16:00", "available": true},
+    "thursday": {"start": "09:00", "end": "17:00", "available": true},
+    "friday": {"start": "09:00", "end": "15:00", "available": true}
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "message": "Availability updated successfully"
+}
+```
+
+## Resources API (/api/v1/resources)
+
+### GET /api/v1/resources (Get Resources - Placeholder)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/resources" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "message": "Resources API - Coming Soon"
+}
+```
+
+### POST /api/v1/resources (Create Resource - Placeholder)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/resources" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+**Example Return:**
+```json
+{
+  "message": "Create resource - Coming Soon"
+}
+```
+
+## Peer Support API (/api/v1/peer-support)
+
+### GET /api/v1/peer-support/posts (Get Posts - Placeholder)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/peer-support/posts" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "message": "Peer Support Posts API - Coming Soon"
+}
+```
+
+### POST /api/v1/peer-support/posts (Create Post - Placeholder)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/peer-support/posts" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+**Example Return:**
+```json
+{
+  "message": "Create post - Coming Soon"
+}
+```
+
+## Admin API (/api/v1/admin)
+
+### GET /api/v1/admin/dashboard (Get Dashboard Metrics)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/dashboard" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "total_users": 150,
+  "active_users_today": 45,
+  "active_users_week": 120,
+  "total_assessments": 89,
+  "assessments_this_week": 23,
+  "high_risk_users": 5,
+  "pending_appointments": 12,
+  "completed_appointments_today": 8,
+  "chat_sessions_today": 67,
+  "crisis_interventions_week": 3
+}
+```
+
+### GET /api/v1/admin/users/analytics (Get User Analytics)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/users/analytics?limit=50&skip=0" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "user_id": "507f1f77bcf86cd799439011",
+    "risk_level": "low",
+    "last_assessment_date": "2024-01-15T11:00:00Z",
+    "last_chat_session": "2024-01-15T10:45:00Z",
+    "total_sessions": 3,
+    "improvement_trend": "stable",
+    "recommended_actions": ["Continue monitoring"]
+  }
+]
+```
+
+### GET /api/v1/admin/trends/assessments (Get Assessment Trends)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/trends/assessments?days=30" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "assessment_type": "PHQ9",
+    "date": "2024-01-15",
+    "average_score": 7.5,
+    "high_risk_count": 2,
+    "total_assessments": 15
+  }
+]
+```
+
+### GET /api/v1/admin/alerts/crisis (Get Crisis Alerts)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/alerts/crisis?days=7" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439016",
+    "user_id": "507f1f77bcf86cd799439011",
+    "alert_type": "chat_crisis",
+    "severity": "high",
+    "description": "Crisis indicators detected in chat: suicide ideation",
+    "triggered_at": "2024-01-15T14:30:00Z",
+    "resolved_at": null,
+    "handled_by": null,
+    "status": "active"
+  }
+]
+```
+
+### POST /api/v1/admin/alerts/{alert_id}/resolve (Resolve Crisis Alert)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/admin/alerts/507f1f77bcf86cd799439016/resolve" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resolution_notes": "Student connected with counselor, follow-up appointment scheduled"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "message": "Crisis alert resolved successfully"
+}
+```
+
+### GET /api/v1/admin/reports/institution (Generate Institution Report)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/reports/institution?period=monthly" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "institution_id": "default",
+  "report_period": "monthly",
+  "start_date": "2024-01-01",
+  "end_date": "2024-01-31",
+  "metrics": {
+    "total_users": 150,
+    "active_users_today": 45,
+    "active_users_week": 120,
+    "total_assessments": 89,
+    "assessments_this_week": 23,
+    "high_risk_users": 5,
+    "pending_appointments": 12,
+    "completed_appointments_today": 8,
+    "chat_sessions_today": 67,
+    "crisis_interventions_week": 3
+  },
+  "trends": [],
+  "high_risk_students": 5,
+  "interventions_made": 3,
+  "resource_utilization": {
+    "chat_sessions": 67,
+    "assessments_completed": 23,
+    "appointments_booked": 15
+  },
+  "recommendations": [
+    "Consider expanding counseling staff",
+    "Mental health awareness campaigns are effective"
+  ],
+  "generated_at": "2024-01-15T15:00:00Z"
+}
+```
+
+### GET /api/v1/admin/users/anonymized (Get Anonymized User Data)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/users/anonymized" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "age_group": "18-20",
+    "gender": "male",
+    "year_of_study": 2,
+    "department_category": "STEM",
+    "risk_indicators": [],
+    "engagement_level": "medium"
+  }
+]
+```
+
+### POST /api/v1/admin/interventions/plan (Create Intervention Plan)
+**Curl Command:**
+```bash
+curl -X POST "http://localhost:8000/api/v1/admin/interventions/plan" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target_metric": "high_risk_users",
+    "goal_value": 3,
+    "current_value": 5,
+    "timeline_days": 30,
+    "strategies": ["Increase counseling staff", "Implement peer support program"],
+    "assigned_to": "507f1f77bcf86cd799439017"
+  }'
+```
+
+**Example Return:**
+```json
+{
+  "target_metric": "high_risk_users",
+  "goal_value": 3,
+  "current_value": 5,
+  "timeline_days": 30,
+  "strategies": ["Increase counseling staff", "Implement peer support program"],
+  "assigned_to": "507f1f77bcf86cd799439017",
+  "created_at": "2024-01-15T15:30:00Z"
+}
+```
+
+### GET /api/v1/admin/emotional-insights/{user_id} (Get User Emotional Insights)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/emotional-insights/507f1f77bcf86cd799439011" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "user_id": "507f1f77bcf86cd799439011",
+  "insights_summary": "User shows consistent patterns of anxiety related to academic pressure...",
+  "emotional_timeline": [
+    {
+      "date": "2024-01-10",
+      "emotional_state": "anxious",
+      "intensity": 7
+    }
+  ],
+  "generated_at": "2024-01-15T16:00:00Z",
+  "counselor_id": "507f1f77bcf86cd799439014"
+}
+```
+
+### GET /api/v1/admin/notifications (Get Admin Notifications)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/admin/notifications?limit=50" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+[
+  {
+    "id": "507f1f77bcf86cd799439018",
+    "type": "crisis_alert",
+    "title": "High-risk assessment submitted",
+    "message": "Student John Doe submitted PHQ-9 with score 18",
+    "created_at": "2024-01-15T14:30:00Z",
+    "read": false
+  }
+]
+```
+
+### PUT /api/v1/admin/notifications/{notification_id}/read (Mark Notification as Read)
+**Curl Command:**
+```bash
+curl -X PUT "http://localhost:8000/api/v1/admin/notifications/507f1f77bcf86cd799439018/read" \
+  -H "Authorization: Bearer ADMIN_ACCESS_TOKEN" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "message": "Notification marked as read"
+}
+```
+
+## Voice Chat API (/api/v1/voice)
+
+### WebSocket /api/v1/voice/ws/voice-chat (Voice Chat WebSocket)
+**WebSocket Connection:**
+```javascript
+// JavaScript example for connecting to voice chat
+const ws = new WebSocket('ws://localhost:8000/api/v1/voice/ws/voice-chat?token=YOUR_ACCESS_TOKEN');
+
+// Send audio chunk
+ws.send(JSON.stringify({
+  type: 'audio_chunk',
+  audio_data: 'base64_encoded_audio_data',
+  format: 'wav',
+  sample_rate: 16000
+}));
+
+// Send text input
+ws.send(JSON.stringify({
+  type: 'text_input',
+  text: 'Hello, I need some support'
+}));
+
+// Send ping to keep connection alive
+ws.send(JSON.stringify({
+  type: 'ping'
+}));
+
+// End session
+ws.send(JSON.stringify({
+  type: 'end_session'
+}));
+```
+
+**Example Messages:**
+```json
+// Welcome message from server
+{
+  "type": "welcome",
+  "message": "Hello John, I'm here to listen and support you...",
+  "session_id": "session-123",
+  "timestamp": "2024-01-15T16:00:00Z"
+}
+
+// Text response from server
+{
+  "type": "text_response",
+  "text": "I understand you're feeling anxious about your exams...",
+  "timestamp": "2024-01-15T16:00:05Z"
+}
+
+// Audio response from server
+{
+  "type": "audio_response",
+  "audio_data": "base64_encoded_audio_data",
+  "format": "wav",
+  "timestamp": "2024-01-15T16:00:05Z"
+}
+
+// Crisis alert from server
+{
+  "type": "crisis_alert",
+  "message": "I'm concerned about what you've shared...",
+  "resources": [
+    {
+      "name": "National Suicide Prevention Lifeline",
+      "phone": "988",
+      "description": "24/7 crisis support"
+    }
+  ],
+  "timestamp": "2024-01-15T16:00:10Z"
+}
+```
+
+### GET /api/v1/voice/voice-chat/status (Get Voice Chat Status)
+**Curl Command:**
+```bash
+curl -X GET "http://localhost:8000/api/v1/voice/voice-chat/status" \
+  -H "accept: application/json"
+```
+
+**Example Return:**
+```json
+{
+  "service": "Voice Chat",
+  "status": "active",
+  "active_connections": 3,
+  "features": [
+    "Real-time voice transcription",
+    "Mental health-focused responses",
+    "Crisis detection and intervention",
+    "Personalized user context",
+    "Audio response synthesis"
+  ]
+}
+```
+
+## Notes
+
+1. **Authentication**: Most endpoints require a Bearer token in the Authorization header
+2. **Admin Access**: Some endpoints require admin or counselor role
+3. **WebSocket**: Voice chat uses WebSocket for real-time communication
+4. **File Uploads**: Some endpoints may support file uploads (not fully documented here)
+5. **Pagination**: List endpoints support `skip` and `limit` parameters
+6. **Date Format**: Use YYYY-MM-DD format for dates
+7. **Time Format**: Use HH:MM format for times
+8. **Base64 Encoding**: Audio data is sent as base64 encoded strings
+9. **CORS**: The API supports cross-origin requests from configured domains

@@ -1,0 +1,238 @@
+Needlist of backend APIs required by the frontend (EmotiCare)
+Base URL (dev): http://localhost:8000
+
+Summary: The frontend is a React SPA with UI modules for: Auth (login/register), AI Chat (local simulated in UI but backend voice/chat endpoints exist), Booking (appointments), Resource Hub (static/mocked in UI), Peer Support Forum (posts/replies), Admin Dashboard (analytics/alerts). The frontend currently uses mock data in many places, but these are the logical endpoints needed when wiring to backend.
+
+-----------------------------
+Authentication
+-----------------------------
+1) POST /api/v1/auth/register
+ - Purpose: create new user (student/counselor/admin)
+ - Body (application/json): { email, password, full_name, role, student_id?, department?, year_of_study?, gender?, age?, phone_number?, emergency_contact? }
+ - Returns: User object (id, email, full_name, role, is_active, ...)
+ - Example curl:
+   curl -X POST "http://localhost:8000/api/v1/auth/register" -H "Content-Type: application/json" -d '{"email":"student@example.com","password":"Pass123!","full_name":"John Doe","role":"student"}'
+
+2) POST /api/v1/auth/login
+ - Purpose: exchange credentials for access token
+ - Body (x-www-form-urlencoded): username (email), password
+ - Returns: { access_token, token_type, expires_in, user }
+ - Example curl:
+   curl -X POST "http://localhost:8000/api/v1/auth/login" -H "Content-Type: application/x-www-form-urlencoded" -d "username=student@example.com&password=Pass123!"
+
+3) GET /api/v1/auth/me
+ - Purpose: get current user profile
+ - Header: Authorization: Bearer <token>
+ - Returns: User object
+
+4) PUT /api/v1/auth/me
+ - Purpose: update profile (name, phone, etc)
+ - Body: partial user fields
+ - Header: Authorization: Bearer <token>
+ - Returns: updated User object
+
+5) POST /api/v1/auth/change-password
+ - Purpose: change current user's password
+ - Header: Authorization
+ - Body: { current_password, new_password }
+ - Returns: { message }
+
+6) POST /api/v1/auth/logout
+ - Purpose: logout
+ - Header: Authorization
+ - Returns: { message }
+
+7) GET /api/v1/auth/users (admin)
+ - Purpose: fetch list of users for admin views
+ - Query: skip, limit, role
+ - Header: Authorization: Bearer <admin_token>
+
+-----------------------------
+Chat / AI Support (frontend uses local simulated chat; backend endpoints are useful to wire later)
+-----------------------------
+8) POST /api/v1/chat/start-session
+ - Purpose: start new AI chat session
+ - Header: Authorization
+ - Body: { initial_message, emotional_state }
+ - Returns: ChatSession object (id, user_id, messages[], status, emotional_state, ...)
+
+9) POST /api/v1/chat/sessions/{session_id}/message
+ - Purpose: send message to existing session
+ - Header: Authorization
+ - Body: { message_content }
+ - Returns: ChatResponse { message, requires_intervention, emotional_support_level, suggested_resources }
+
+10) GET /api/v1/chat/sessions (list user sessions)
+ - Header: Authorization
+ - Query: limit, skip
+ - Returns: list of ChatSessionSummary
+
+11) GET /api/v1/chat/sessions/{session_id}
+ - Header: Authorization
+ - Returns: ChatSession (full)
+
+12) POST /api/v1/chat/sessions/{session_id}/end
+ - Header: Authorization
+ - Returns: { message }
+
+13) GET /api/v1/chat/emergency-resources
+ - Public
+ - Returns crisis hotlines and coping steps
+
+-----------------------------
+Appointments / Booking (BookingSystem component)
+-----------------------------
+14) POST /api/v1/appointments/book
+ - Purpose: book an appointment
+ - Header: Authorization
+ - Body (application/json): { counselor_id, appointment_date, start_time, end_time, appointment_type, mode, reason, urgency_level, notes }
+ - Returns: BookingResponse { appointment_id, status, counselor_name, appointment_date, start_time, end_time, message }
+
+15) GET /api/v1/appointments/available-slots
+ - Purpose: show available counselor slots
+ - Header: Authorization
+ - Query: counselor_id?, date (YYYY-MM-DD), appointment_type?
+ - Returns: [ { counselor_id, counselor_name, date, start_time, end_time, appointment_type, available } ]
+
+16) GET /api/v1/appointments/my-appointments
+ - Purpose: user's upcoming appointments
+ - Header: Authorization
+ - Returns: list of AppointmentResponse
+
+17) PUT /api/v1/appointments/{appointment_id}
+ - Update appointment details (reason, notes, status)
+ - Header: Authorization
+ - Body: AppointmentUpdate
+
+18) DELETE /api/v1/appointments/{appointment_id}
+ - Cancel appointment
+ - Header: Authorization
+
+19) GET /api/v1/appointments/counselors
+ - Purpose: list counselors (for booking UI)
+ - Header: Authorization
+ - Returns: list of counselor objects (id, name, specializations, availability, languages, rating)
+
+20) GET /api/v1/appointments/counselor/appointments
+ - Purpose: counselor's appointments view (used by counselors in UI)
+ - Header: Authorization (counselor token)
+ - Query: status?, date?
+
+21) PUT /api/v1/appointments/counselor/availability
+ - Purpose: counselor sets availability
+ - Header: Authorization
+ - Body: availability object
+
+-----------------------------
+Resources (ResourceHub)
+-----------------------------
+Note: frontend currently uses mockResources; recommend these endpoints to serve real resources
+22) GET /api/v1/resources
+ - Returns list of resources with metadata (id, title, description, type, category, duration, language, rating, downloads, difficulty, thumbnail)
+
+23) POST /api/v1/resources
+ - Create resource (admin)
+
+24) GET /api/v1/resources/{resource_id}
+ - Get single resource (for streaming/download)
+
+25) GET /api/v1/resources/download/{resource_id}
+ - Serve download link or file
+
+-----------------------------
+Peer Support / Forum (PeerSupport component)
+-----------------------------
+Frontend currently uses mockPosts and mockReplies. Needed endpoints when wired:
+26) GET /api/v1/peer-support/posts
+ - Returns list of posts with summary info
+ - Query: search?, category?, skip?, limit?
+
+27) POST /api/v1/peer-support/posts
+ - Create new post
+ - Header: Authorization (or allow anonymous)
+ - Body: { title, content, category, isAnonymous, tags }
+ - Returns: created post
+
+28) GET /api/v1/peer-support/posts/{post_id}
+ - Returns full post + replies
+
+29) POST /api/v1/peer-support/posts/{post_id}/replies
+ - Add reply to post
+ - Header: Authorization (optional anonymous)
+ - Body: { content, isAnonymous }
+ - Returns: created reply
+
+30) POST /api/v1/peer-support/posts/{post_id}/like
+ - Like a post (optional)
+
+31) POST /api/v1/peer-support/replies/{reply_id}/like
+ - Like a reply (optional)
+
+-----------------------------
+Admin APIs (AdminDashboard)
+-----------------------------
+A lot of the admin UI is mock data. When hooked to backend, these endpoints are needed:
+32) GET /api/v1/admin/dashboard
+ - Admin header
+ - Returns metrics: total_users, active_users_today, active_users_week, total_assessments, assessments_this_week, high_risk_users, pending_appointments, completed_appointments_today, chat_sessions_today, crisis_interventions_week
+
+33) GET /api/v1/admin/users/analytics
+ - Query: risk_level?, limit, skip
+ - Returns list of user analytics
+
+34) GET /api/v1/admin/trends/assessments
+ - Query: days, assessment_type
+ - Returns assessment trends
+
+35) GET /api/v1/admin/alerts/crisis
+ - Returns crisis alerts for admin
+
+36) POST /api/v1/admin/alerts/{alert_id}/resolve
+ - Resolve an alert (admin/counselor)
+
+37) GET /api/v1/admin/reports/institution
+ - Generate institution-level report
+
+38) GET /api/v1/admin/users/anonymized
+ - For research exports
+
+39) POST /api/v1/admin/interventions/plan
+ - Create intervention plan
+
+40) GET /api/v1/admin/emotional-insights/{user_id}
+ - Get emotional insights for counselor review
+
+41) GET /api/v1/admin/notifications
+ - Get admin notifications (for notifications widget)
+
+42) PUT /api/v1/admin/notifications/{notification_id}/read
+ - Mark notification as read
+
+-----------------------------
+Voice Chat / WebSocket
+-----------------------------
+43) WebSocket: ws://localhost:8000/api/v1/voice/ws/voice-chat?token=YOUR_ACCESS_TOKEN
+ - Used for real-time voice chat (not used in current frontend code; UI uses simulated chat but the voice chat page could be wired later)
+
+44) GET /api/v1/voice/voice-chat/status
+ - Returns service status and active connections
+
+-----------------------------
+Misc / Utilities
+-----------------------------
+45) GET /health
+ - Basic health check for monitoring
+
+46) Static file serving for frontend (not part of API): serve built frontend or proxy dev server to backend
+
+-----------------------------
+Notes & Prioritization (what to implement first when wiring):
+ - Critical for basic app: Auth endpoints (login/register/me), appointments listing and booking, chat session start/message, assessments endpoints if assessments feature is enabled, resources list, peer-support posts (GET/POST) for community features.
+ - Admin endpoints can be added gradually as dashboards are integrated.
+ - Voice WebSocket optional until real-time voice feature is enabled.
+
+If you want, I can now:
+ - Create API stubs in the backend for the missing endpoints (fast map to existing handlers where present), or
+ - Generate a smaller prioritized `needapi_minimal.txt` with only endpoints necessary to get the frontend fully functional (auth + appointments + chat + peer-support + resources).
+
+File created at: /home/cp/EmotiCare/backend/needapi.txt
