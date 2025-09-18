@@ -219,7 +219,7 @@ async def get_user_sessions(
                 try:
                     first_user_msg = messages[0].get("content", "")
                     first_ai_msg = messages[1].get("content", "")
-                    chat_title = mental_health_chat.generate_chat_title(first_user_msg, first_ai_msg)
+                    chat_title = await mental_health_chat.generate_chat_title(first_user_msg, first_ai_msg)
                     
                     # Store the generated title in the database
                     await db.chat_sessions.update_one(
