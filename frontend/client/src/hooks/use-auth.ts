@@ -38,6 +38,8 @@ export function useAuth() {
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
+      // Navigate to dashboard after successful login
+      setLocation('/dashboard');
     },
     onError: (error) => {
       toast({
@@ -78,6 +80,8 @@ export function useAuth() {
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
+      // Navigate to login page after logout
+      setLocation('/login');
     },
     onError: () => {
       // Even if the API call fails, clear local storage
@@ -85,6 +89,8 @@ export function useAuth() {
       setUser(null);
       setIsAuthenticated(false);
       queryClient.clear();
+      // Navigate to login page even if logout fails
+      setLocation('/login');
     },
   });
 
