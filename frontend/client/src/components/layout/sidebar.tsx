@@ -61,32 +61,31 @@ export default function Sidebar() {
               const isActive = location === item.href || (location === "/" && item.href === "/dashboard");
               
               return (
-                <Link key={item.name} href={item.href}>
-                  <a
-                    className={cn(
-                      "flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-card-foreground hover:bg-muted"
-                    )}
-                    data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span>{item.name}</span>
-                  </a>
+                <Link 
+                  key={item.name} 
+                  href={item.href}
+                  className={cn(
+                    "flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-card-foreground hover:bg-muted"
+                  )}
+                  data-testid={`nav-${item.name.toLowerCase().replace(/\s+/g, '-')}`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.name}</span>
                 </Link>
               );
             })}
 
             {/* Emergency button */}
-            <Link href="/emergency">
-              <a 
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors emergency-pulse"
-                data-testid="nav-emergency"
-              >
-                <AlertTriangle className="w-5 h-5" />
-                <span>Emergency Resources</span>
-              </a>
+            <Link 
+              href="/emergency"
+              className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors emergency-pulse"
+              data-testid="nav-emergency"
+            >
+              <AlertTriangle className="w-5 h-5" />
+              <span>Emergency Resources</span>
             </Link>
           </nav>
 

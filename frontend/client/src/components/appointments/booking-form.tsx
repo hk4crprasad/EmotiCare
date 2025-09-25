@@ -110,7 +110,7 @@ export default function BookingForm({ open, onOpenChange, counselors }: BookingF
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto booking-modal">
         <DialogHeader>
           <DialogTitle>Book New Appointment</DialogTitle>
         </DialogHeader>

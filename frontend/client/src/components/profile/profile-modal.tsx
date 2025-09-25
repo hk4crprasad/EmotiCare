@@ -44,7 +44,7 @@ export default function ProfileModal({ open, onOpenChange }: ProfileModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md profile-modal">
         <DialogHeader>
           <DialogTitle>Profile Settings</DialogTitle>
         </DialogHeader>

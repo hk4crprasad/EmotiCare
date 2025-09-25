@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useLocation } from 'wouter';
 import { api } from '@/lib/api';
 import { authStorage } from '@/lib/auth';
 import { User, LoginRequest, RegisterRequest } from '@/types';
@@ -10,7 +9,6 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -38,8 +36,6 @@ export function useAuth() {
         title: "Welcome back!",
         description: "You have successfully logged in.",
       });
-      // Navigate to dashboard after successful login
-      setLocation('/dashboard');
     },
     onError: (error) => {
       toast({
@@ -80,8 +76,6 @@ export function useAuth() {
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
-      // Navigate to login page after logout
-      setLocation('/login');
     },
     onError: () => {
       // Even if the API call fails, clear local storage
@@ -89,8 +83,6 @@ export function useAuth() {
       setUser(null);
       setIsAuthenticated(false);
       queryClient.clear();
-      // Navigate to login page even if logout fails
-      setLocation('/login');
     },
   });
 

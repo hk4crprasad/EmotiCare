@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -122,14 +122,17 @@ export default function AssessmentModal({ open, onOpenChange, assessmentType }: 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto assessment-modal">
         <DialogHeader>
           <DialogTitle>{getAssessmentTitle(assessmentType)}</DialogTitle>
+          <DialogDescription>
+            {currentStep === 'questions' 
+              ? 'Please answer all questions honestly based on how you\'ve been feeling over the past 2 weeks.'
+              : 'Here are your assessment results and recommendations.'
+            }
+          </DialogDescription>
           {currentStep === 'questions' && (
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">
-                Please answer all questions honestly based on how you've been feeling over the past 2 weeks.
-              </p>
               <div className="space-y-1">
                 <div className="flex justify-between text-sm">
                   <span>Progress</span>
@@ -147,8 +150,8 @@ export default function AssessmentModal({ open, onOpenChange, assessmentType }: 
           </div>
         ) : currentStep === 'questions' ? (
           <div className="space-y-6" data-testid="assessment-questions">
-            {questionsData?.questions?.map((question: any, index: number) => (
-              <Card key={question.id} className="p-4">
+            {questionsData?.questions?.filter(Boolean).map((question: any, index: number) => (
+              <Card key={`question-${question?.id || `q${index}`}-${index}`} className="p-4">
                 <div className="space-y-4">
                   <div className="flex items-start space-x-3">
                     <span className="text-sm font-medium text-primary bg-primary/10 rounded-full w-6 h-6 flex items-center justify-center">
@@ -166,8 +169,8 @@ export default function AssessmentModal({ open, onOpenChange, assessmentType }: 
                     onValueChange={(value) => handleResponseChange(question.id, value)}
                     className="grid gap-3 ml-9"
                   >
-                    {question.options?.map((option: string, optionIndex: number) => (
-                      <div key={optionIndex} className="flex items-center space-x-2">
+                    {question.options?.filter(Boolean).map((option: string, optionIndex: number) => (
+                      <div key={`${question?.id || `q${index}`}-option-${optionIndex}-${option.slice(0, 5)}`} className="flex items-center space-x-2">
                         <RadioGroupItem 
                           value={optionIndex.toString()} 
                           id={`${question.id}-${optionIndex}`}
@@ -248,7 +251,7 @@ export default function AssessmentModal({ open, onOpenChange, assessmentType }: 
                     </h4>
                     <ul className="space-y-2">
                       {submittedAssessment.recommendations.map((rec: string, index: number) => (
-                        <li key={index} className="flex items-start">
+                        <li key={`recommendation-${index}-${rec.slice(0, 10)}`} className="flex items-start">
                           <span className="w-2 h-2 bg-primary rounded-full mt-2 mr-3 flex-shrink-0"></span>
                           <span className="text-muted-foreground">{rec}</span>
                         </li>

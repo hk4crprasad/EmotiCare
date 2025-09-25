@@ -98,6 +98,68 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    opacity: 1 !important;
+  }
+
+  #root {
+    opacity: 1 !important;
+  }
+
+  /* Ensure all main UI elements have full opacity */
+  .app-content,
+  main,
+  .dashboard,
+  .page-content {
+    opacity: 1 !important;
+  }
+
+  /* Fix modal visibility issues - comprehensive approach */
+  .assessment-modal,
+  .booking-modal, 
+  .profile-modal {
+    opacity: 1 !important;
+    background: hsl(var(--background)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
+  /* Ensure all modal content is fully visible */
+  .assessment-modal *,
+  .booking-modal *,
+  .profile-modal * {
+    opacity: 1 !important;
+  }
+
+  /* Make modal text clearly visible */
+  .assessment-modal .text-muted-foreground,
+  .booking-modal .text-muted-foreground,
+  .profile-modal .text-muted-foreground {
+    color: hsl(var(--muted-foreground)) !important;
+    opacity: 0.9 !important;
+  }
+
+  /* Ensure card elements in modals are visible */
+  .assessment-modal .card,
+  .booking-modal .card,
+  .profile-modal .card {
+    background: hsl(var(--card)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    opacity: 1 !important;
+  }
+
+  /* Make buttons in modals clearly visible */
+  .assessment-modal .button,
+  .assessment-modal button,
+  .booking-modal .button,
+  .booking-modal button,
+  .profile-modal .button,
+  .profile-modal button {
+    opacity: 1 !important;
+  }
+
+  /* Ensure dialog overlay is properly visible */
+  [data-radix-dialog-overlay] {
+    background: rgba(0, 0, 0, 0.8) !important;
+    opacity: 1 !important;
   }
 }
 
